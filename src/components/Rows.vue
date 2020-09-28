@@ -29,10 +29,12 @@ export default {
 .row_container div {
   display: inline-block;
   min-width: 27%;
-  padding: 20px 3%;
+  padding: 7px 3%;
   text-align: left;
 }
 
+/* taks: warning and danger icon instead of picture. 
+purpose: We're not supplying icons for the arrows, the red X or the yellow exclamation point, so feel free to implement these however you'd like. Your icons don't need to look like our icons. */
 .danger_icon {
   background: #d7432d;
   color: white;

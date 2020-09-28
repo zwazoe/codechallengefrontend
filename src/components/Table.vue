@@ -9,15 +9,15 @@
          -->
         <div class="header_item" v-on:click="() => onSort('row')">
           Row
-          <i class="arrow_active" v-bind:class="[dirClass, rowClass]"></i>
+          <i class="arrow_active" v-bind:class="[rowClass]"></i>
         </div>
         <div class="header_item" v-on:click="() => onSort('status')">
           Status
-          <i class="arrow_active" v-bind:class="[dirClass, statusClass]"></i>
+          <i class="arrow_active" v-bind:class="[statusClass]"></i>
         </div>
         <div class="header_item" v-on:click="() => onSort('reason')">
           Reason
-          <i class="arrow_active" v-bind:class="[dirClass, reasonClass]"></i>
+          <i class="arrow_active" v-bind:class="[reasonClass]"></i>
         </div>
       </div>
       <div>
@@ -53,8 +53,10 @@ export default {
         reason: "Server Error",
       };
       // get statuses via these callback functions.
-      this.statuses = getIncludes(data, status, (v) =>
-        defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
+      this.statuses = getIncludes(data, { inc: status }, (v) =>
+        defaultValue(v, { default_dict }, (v) =>
+          sortValue(v, { sort_by: this.sort })
+        )
       );
     },
     // task: sort data,
