@@ -26,6 +26,8 @@
 <script>
 import axios from "axios";
 import Rows from "./Rows";
+import data from "../data/data.json";
+import { getIncludes, defaultValue, sortValue } from "../mw/search";
 
 export default {
   name: "Table",
@@ -38,9 +40,19 @@ export default {
       this.sort = [section, toggle_direction];
       axios
         .get(
-          `http://localhost:5000/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
+          `http://localhost:5003/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
         )
-        .then((res) => (this.statuses = res.data));
+        .then((res) => (this.statuses = res.data))
+        .catch(() => {
+          let status = this.show ? this.show.split(",") : ["error", "failure"];
+          let default_dict = {
+            status: "Error",
+            reason: "Server Error",
+          };
+          this.statuses = getIncludes(data, status, (v) =>
+            defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
+          );
+        });
     },
   },
   components: {
@@ -49,12 +61,27 @@ export default {
   mounted() {
     axios
       .get(
-        `http://localhost:5000/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
+        `http://localhost:5001/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
       )
-      .then((res) => (this.statuses = res.data));
+      .then((res) => (this.statuses = res.data))
+      .catch(() => {
+        let status = this.show ? this.show.split(",") : ["error", "failure"];
+        let default_dict = {
+          status: "Error",
+          reason: "Server Error",
+        };
+        this.statuses = getIncludes(data, status, (v) =>
+          defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
+        );
+      });
   },
   data: () => {
-    return { statuses: [{ item: "text" }], sort: ["row", "asc"] };
+    return {
+      statuses: [],
+      sort: ["row", "asc"],
+      json_status: [],
+      show: "error,failure",
+    };
   },
   computed: {
     rowClass() {
