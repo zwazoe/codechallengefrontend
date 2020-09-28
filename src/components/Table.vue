@@ -35,23 +35,30 @@ export default {
     msg: String,
   },
   methods: {
+    clientSideServe() {
+      let status = this.show ? this.show.split(",") : ["error", "failure"];
+      let default_dict = {
+        status: "Error",
+        reason: "Server Error",
+      };
+      this.statuses = getIncludes(data, status, (v) =>
+        defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
+      );
+    },
     onSort(section) {
       let toggle_direction = this.sort[1] == "asc" ? "desc" : "asc";
       this.sort = [section, toggle_direction];
+
+      // if server is available, data will be sorted and sanitized by the server.
+      // if not, data will be sorted and sanitized by client.
+
       axios
         .get(
-          `http://localhost:5003/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
+          `http://localhost:5000/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
         )
         .then((res) => (this.statuses = res.data))
         .catch(() => {
-          let status = this.show ? this.show.split(",") : ["error", "failure"];
-          let default_dict = {
-            status: "Error",
-            reason: "Server Error",
-          };
-          this.statuses = getIncludes(data, status, (v) =>
-            defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
-          );
+          this.clientSideServe();
         });
     },
   },
@@ -59,20 +66,15 @@ export default {
     Rows,
   },
   mounted() {
+    // if server is available, data will be sorted and sanitized by the server.
+    // if not, data will be sorted and sanitized by client.
     axios
       .get(
-        `http://localhost:5001/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
+        `http://localhost:5000/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
       )
       .then((res) => (this.statuses = res.data))
       .catch(() => {
-        let status = this.show ? this.show.split(",") : ["error", "failure"];
-        let default_dict = {
-          status: "Error",
-          reason: "Server Error",
-        };
-        this.statuses = getIncludes(data, status, (v) =>
-          defaultValue(v, default_dict, (v) => sortValue(v, this.sort))
-        );
+        this.clientSideServe();
       });
   },
   data: () => {
@@ -112,7 +114,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .header_container div {
   display: inline-block;
