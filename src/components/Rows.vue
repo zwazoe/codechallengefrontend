@@ -43,6 +43,7 @@ purpose: We're not supplying icons for the arrows, the red X or the yellow excla
   font-weight: 900;
   border-radius: 50%;
 }
+
 .warning_icon {
   background: #f7ca03;
   color: white;

@@ -61,8 +61,8 @@ export default {
     },
     // task: sort data,
     //purpose: Only 1 sorting method should ever be active at a time.
-
-    onSort(section) {
+    // show of knowledge: uses async instead of promises
+    async onSort(section) {
       //purpse: Clicking on a column header that is already active (i.e. clicking on "Row" when "Row" is active) should toggle the direction of the arrow and the sorted data.
       let toggle_direction = this.sort[1] === "asc" ? "desc" : "asc";
 
@@ -72,14 +72,15 @@ export default {
       // if not, data will be sorted and sanitized by client.
       // purpose: fetch new data based on new sort criteriea
 
-      axios
-        .get(
+      try {
+        const res = await axios.get(
           `http://localhost:5000/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
-        )
-        .then((res) => (this.statuses = res.data))
-        .catch(() => {
-          this.clientSideServe();
-        });
+        );
+        this.statuses = res.data;
+      } catch (err) {
+        console.log(err.message, "defaulting to client side serving");
+        this.clientSideServe();
+      }
     },
   },
   components: {
@@ -88,7 +89,7 @@ export default {
   mounted() {
     //task: if server is available, data will be sorted and sanitized by the server.
     // if not, data will be sorted and sanitized by client.
-    // purpose: show of knowledge
+    // show of knowledge: uses promise instead of async
     axios
       .get(
         `http://localhost:5000/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
@@ -175,9 +176,7 @@ export default {
 }
 /* task : create arrow icons:
 purpose: Arrows should default to pointing down.
-Note: on sorting tables, arrows should show neutral when not in used. 
-either hide the arrow. Thefore, if not active, arrow will be pointed 
-down on a neutral manner. 
+Note: advance css knowlege. 
 
  */
 .asc {
