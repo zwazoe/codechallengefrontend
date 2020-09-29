@@ -1,4 +1,4 @@
-export const getIncludes = function(data, config = {}, callback) {
+export const getIncludes = function (data, config = {}, callback) {
   // filter key maybe status or reason or rows. default to status
   let filter_key = config.filter_key || "status";
   // inc maybe error, failure, success (if sstatus) or 1 to ... if row, etc.
@@ -20,7 +20,7 @@ export const getIncludes = function(data, config = {}, callback) {
 
 // task: add default value to the data
 // purpose: Every entry in the JSON file should have a status and a reason, but our data isn't perfect. A missing status should default to "Error", and a missing reason should default to "Server Error".
-export const defaultValue = function(data, config = {}, callback) {
+export const defaultValue = function (data, config = {}, callback) {
   // default key / val will be use if  original data value is absent.
   let default_dict = config.default_dict || {};
   // get the keys of dict.
@@ -46,7 +46,7 @@ export const defaultValue = function(data, config = {}, callback) {
 // task: sort in accordance with sort_by arg
 // purpose: Your implementation should allow a user to click on any of the 3 column headers - Row, Status and Reason. This should  cause the entire table to sort by that field
 
-export const sortValue = function(data, config = {}, callback) {
+export const sortValue = function (data, config = {}, callback) {
   // use of arrays allow for addition sorts if or when necessary.
   let sort_by = config.sort_by || [];
   // config may inc compare to control nomenclature instead of hard coded value.
