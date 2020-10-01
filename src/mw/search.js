@@ -1,6 +1,7 @@
 export const getIncludes = function (data, config = {}, callback) {
   // filter key maybe status or reason or rows. default to status
   let filter_key = config.filter_key || "status";
+
   // inc maybe error, failure, success (if sstatus) or 1 to ... if row, etc.
   let inc = config.inc || ["error", "failure"];
   // filter based data accordingly

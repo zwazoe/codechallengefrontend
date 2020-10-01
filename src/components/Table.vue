@@ -42,7 +42,8 @@ export default {
     msg: String,
   },
   methods: {
-    // task: serve data, purpose: backup server
+    // task: serve data, purpose: backup server,
+
     clientSideServe() {
       // get the keys that should be displayed and make an array. If no key, default to such array
       // purpose: For this table, we only want to see Errors and Failures.
@@ -77,12 +78,24 @@ export default {
           `http://localhost:5000/status?show=error,failure&&sort=${this.sort[0]},${this.sort[1]}`
         );
         this.statuses = res.data;
+        if (!this.server) {
+          // task: let it be known that server is back online.
+          // purpose: allow console to to realize if server is back off line
+          console.log("server on: get data via server ");
+          this.server = true;
+        }
       } catch (err) {
-        console.log(err.message, "defaulting to client side serving");
+        if (this.server) {
+          // task: output client side serving message
+          // purpose: prevent console from outputing error message more than once.
+          console.log("server off: get data via client ");
+          this.server = false;
+        }
         this.clientSideServe();
       }
     },
   },
+
   components: {
     Rows,
   },
@@ -94,8 +107,30 @@ export default {
       .get(
         `http://localhost:5000/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
       )
-      .then((res) => (this.statuses = res.data))
-      .catch(() => {
+      .then((res) => {
+        if (!this.server) {
+          // task: let it be known that server is back online.
+          // purpose: allow console to to realize if server is back off line
+          console.log("server on: get data via server ");
+          this.server = true;
+        }
+        this.statuses = res.data;
+      })
+      .catch((err) => {
+        if (this.server) {
+          // task: output client side serving message
+          // purpose: prevent console from outputing error message more than once.
+          console.log("server off: get data via client ");
+          console.log("Server Instruction:");
+          console.log(
+            "step 1: git clone https://github.com/zwazoe/codechallengeserver.git"
+          );
+          console.log("step 2: cd codechallengeserver ");
+          console.log("step 3: npm install ");
+          console.log("step 4: npm run server");
+          console.log("server will run via port 5000");
+          this.server = false;
+        }
         this.clientSideServe();
       });
   },
@@ -106,6 +141,7 @@ export default {
       // purpose: Arrows should default to pointing down
       sort: ["row", "asc"],
       show: "error,failure",
+      server: true,
     };
   },
   computed: {
