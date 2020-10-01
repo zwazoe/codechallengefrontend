@@ -6,7 +6,7 @@
         <!-- task: show h title and sort values based on such column.
         purpose: Clicking on a column header that is inactive (i.e. clicking on "Status" when "Row" is active) should cause the clicked method to activate.
 
-         -->
+        -->
         <div class="header_item" v-on:click="() => onSort('row')">
           Row
           <i class="arrow_active" v-bind:class="[rowClass]"></i>
@@ -34,12 +34,14 @@ import Rows from "./Rows";
 // purpose: Attached to this email is a JSON data file for your code to consume.
 // purpose:The array provided in the JSON file will have a number of Successes, Errors and Failures.
 import data from "../data/data.json";
-import { getIncludes, defaultValue, sortValue } from "../mw/search";
+import { defaultValue, sortValue } from "../mw/search";
+// npm package created by me for this project:
+import { getFiltered } from "get-filtered";
 
 export default {
   name: "Table",
   props: {
-    msg: String,
+    msg: String
   },
   methods: {
     // task: serve data, purpose: backup server,
@@ -51,11 +53,11 @@ export default {
       // if nomenclature is absent, default based to these values
       let default_dict = {
         status: "Error",
-        reason: "Server Error",
+        reason: "Server Error"
       };
       // get statuses via these callback functions.
-      this.statuses = getIncludes(data, { inc: status }, (v) =>
-        defaultValue(v, { default_dict }, (v) =>
+      this.statuses = getFiltered(data, { inc: status }, v =>
+        defaultValue(v, { default_dict }, v =>
           sortValue(v, { sort_by: this.sort })
         )
       );
@@ -93,11 +95,11 @@ export default {
         }
         this.clientSideServe();
       }
-    },
+    }
   },
 
   components: {
-    Rows,
+    Rows
   },
   mounted() {
     //task: if server is available, data will be sorted and sanitized by the server.
@@ -107,7 +109,7 @@ export default {
       .get(
         `http://localhost:5000/status?show=${this.show}&&sort=${this.sort[0]},${this.sort[1]}`
       )
-      .then((res) => {
+      .then(res => {
         if (!this.server) {
           // task: let it be known that server is back online.
           // purpose: allow console to to realize if server is back off line
@@ -116,10 +118,11 @@ export default {
         }
         this.statuses = res.data;
       })
-      .catch((err) => {
+      .catch(err => {
         if (this.server) {
           // task: output client side serving message
           // purpose: prevent console from outputing error message more than once.
+          console.log(err.message);
           console.log("server off: get data via client ");
           console.log("Server Instruction:");
           console.log(
@@ -141,7 +144,7 @@ export default {
       // purpose: Arrows should default to pointing down
       sort: ["row", "asc"],
       show: "error,failure",
-      server: true,
+      server: true
     };
   },
   computed: {
@@ -159,7 +162,7 @@ export default {
         // assign class to display icon
         // pupose: When a particular sorting method is active, the arrow icon associated with that sort should darken. The other arrows should turn gray. In the example image above, the "Row" sort is active, so the arrow next to the "Row" text is black.
         arrow_active: this.sort[0] === "row",
-        arrow_inactive: this.sort[0] !== "row",
+        arrow_inactive: this.sort[0] !== "row"
       };
     },
     statusClass() {
@@ -169,7 +172,7 @@ export default {
         // desc: this.sort[0] === "status" && this.sort[1] === "asc",
         desc: this.sort[0] !== "status" || this.sort[1] !== "desc",
         arrow_active: this.sort[0] === "status",
-        arrow_inactive: this.sort[0] !== "status",
+        arrow_inactive: this.sort[0] !== "status"
       };
     },
     reasonClass() {
@@ -180,10 +183,10 @@ export default {
         desc: this.sort[0] !== "reason" || this.sort[1] !== "desc",
 
         arrow_active: this.sort[0] === "reason",
-        arrow_inactive: this.sort[0] !== "reason",
+        arrow_inactive: this.sort[0] !== "reason"
       };
-    },
-  },
+    }
+  }
 };
 </script>
 
